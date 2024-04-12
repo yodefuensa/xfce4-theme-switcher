@@ -91,6 +91,17 @@ function load_xfconf() {
     echo "Done"
 }
 
+function load_icons_libreoffice() {
+    echo "Loading Icons for libreoffice settings from ${CONFIG_DIR}IconsLibre"
+    if [ ! -f ${CONFIG_DIR}IconsLibre ]; then
+        echo "Error, could not find file."
+        return
+    fi
+    linea=${CONFIG_DIR}IconsLibre
+    sed -i "/SymbolStyle/c$linea" $HOME/.config/libreoffice/4/user/registrymodifications.xcu
+    echo "Done"
+}
+
 function load() {
     CONFIG_DIR="${DIR}${name}/"
 
@@ -107,6 +118,8 @@ function load() {
     else
         rm $HOME/.cache/wal/sequences
     fi
+
+    load_icons_libreoffice
 }
 
 function save_wal() {
@@ -168,6 +181,17 @@ function save() {
     if [ ! -z $wal ]; then
         save_wal
     fi
+
+    Config_Libr=$HOME/.config/libreoffice/4/user/registrymodifications.xcu
+    if [ -f $Config_Libr ]
+    then
+        echo "El fichero $Config_Libr existe"
+        cat $Config_Libr | grep SymbolStyle > "${CONFIG_DIR}IconsLibre"
+    else
+        echo "El fichero $Config_Libr no existe, Libre office no esta instalado?"
+    fi 
+
+
 }
 
 function list() {
