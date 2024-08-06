@@ -31,41 +31,7 @@ function load_wal() {
         done
     else
         rm $HOME/.cache/wal/sequences
-        #going from wal-theme terminal to normal terminal
-
-        #ls -1 /dev/pts | while read -r terminal;
-        #do
-        #    if [ $terminal != "ptmx" ];
-        #    then
-        #        (cat ~/.config/xfce4-theme-switcher/sequencesRESET &) > /dev/pts/$terminal
-        #    fi
-        #done
     fi
-    echo "Done"
-}
-
-function load_panel() {
-    command -v xfce4-panel-profiles &> /dev/null
-    if [ $? -eq 1 ]; then
-        echo -e "\n!! Command \"xfce4-panel-profiles\" not found. Skipping loading panel configuration !!\n"
-        return
-    fi
-    echo "Loading panel configuration from ${CONFIG_DIR}${name}-panel.tar.bz2"
-    xfce4-panel-profiles load ${CONFIG_DIR}${name}-panel.tar.bz2 &> /dev/null
-    if [ $? -eq 0 ]; then
-        echo "Done"
-    else
-        echo "Error"
-    fi
-}
-
-function load_terminalrc() {
-    echo "Loading terminal settings from ${CONFIG_DIR}terminalrc"
-    if [ ! -f ${CONFIG_DIR}terminalrc ]; then
-        echo "Error, could not find file."
-        return
-    fi
-    cp "${CONFIG_DIR}terminalrc" $HOME/.config/xfce4/terminal/terminalrc
     echo "Done"
 }
 
@@ -108,10 +74,6 @@ function load() {
     load_xfconf "xsettings"
     load_xfconf "xfwm4"
     load_xfconf "xfce4-desktop"
-    
-    load_terminalrc
-
-    load_panel
 
     if [ -f $CONFIG_DIR/sequences ]; then
         load_wal
@@ -128,16 +90,6 @@ function save_wal() {
     echo "Done"
 }
 
-function save_panel() {
-    command -v xfce4-panel-profiles &> /dev/null
-    if [ $? -eq 1 ]; then
-        echo -e "\n!! Command \"xfce4-panel-profiles\" not found. Skipping loading panel configuration !!\n"
-        return
-    fi
-    echo "Saving panel configuration to ${CONFIG_DIR}${name}-panel.tar.bz2"
-    xfce4-panel-profiles save "${CONFIG_DIR}${name}-panel.tar.bz2"
-    echo "Done"
-}
 
 function save() {
     CONFIG_DIR="${DIR}${name}/"
@@ -172,11 +124,6 @@ function save() {
     xfconf-query -c xfce4-desktop -lv > "${CONFIG_DIR}xfce4-desktop.conf"
     echo "Done"
 
-    echo "Saving xfce4-terminal settings to ${CONFIG_DIR}terminalrc"
-    cp $HOME/.config/xfce4/terminal/terminalrc "${CONFIG_DIR}terminalrc"
-    echo "Done"
-
-    save_panel
 
     if [ ! -z $wal ]; then
         save_wal
